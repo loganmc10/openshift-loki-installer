@@ -5,3 +5,4 @@
     operator_name: loki-operator
     operator_namespace: openshift-operators-redhat
     all_namespaces: true
+    cluster_monitoring: true
