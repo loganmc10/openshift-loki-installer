@@ -69,7 +69,7 @@
         name: logging-loki
         namespace: openshift-logging
       spec:
-        size: 1x.extra-small
+        size: 1x.small
         storage:
           schemas:
             - version: v12
