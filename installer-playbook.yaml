@@ -1,0 +1,6 @@
+- name: Install Loki and Grafana
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - {role: 'loki_install', tags: 'loki_install'}
+    - {role: 'grafana_install', tags: 'grafana_install'}
