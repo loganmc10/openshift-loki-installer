@@ -1,0 +1,3 @@
+[submodule "openshift-edge-installer"]
+	path = openshift-edge-installer
+	url = https://github.com/loganmc10/openshift-edge-installer.git
