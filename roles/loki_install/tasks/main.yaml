@@ -16,25 +16,58 @@
     all_namespaces: true
     cluster_monitoring: true
 
-- name: Get NooBaa secret
+- name: Get NooBaa tls cert
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
-    name: noobaa-admin
+    name: noobaa-s3-serving-cert
     namespace: openshift-storage
-  register: noobaa_secret
-  until: noobaa_secret is not failed
+  register: noobaa_s3_cert
+  until: noobaa_s3_cert is not failed
 
-- name: Get NooBaa endpoint
+- name: Create Loki s3 cert
+  kubernetes.core.k8s:
+    template: ConfigMap.yaml.j2
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Create Loki ObjectBucketClaim
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: objectbucket.io/v1alpha1
+      kind: ObjectBucketClaim
+      metadata:
+        name: loki-obc
+        namespace: openshift-logging
+      spec:
+        generateBucketName: loki-bucket
+        storageClassName: openshift-storage.noobaa.io
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Get ObjectBucketClaim ConfigMap
   kubernetes.core.k8s_info:
-    api_version: noobaa.io/v1alpha1
-    kind: NooBaa
-    name: noobaa
-    namespace: openshift-storage
-  register: noobaa
-  until: noobaa is not failed
+    api_version: v1
+    kind: ConfigMap
+    name: loki-obc
+    namespace: openshift-logging
+  register: obc_cm
+  until: obc_cm is not failed
 
-- name: Create Loki secret
+- name: Get ObjectBucketClaim Secret
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: loki-obc
+    namespace: openshift-logging
+  register: obc_secret
+  until: obc_secret is not failed
+
+- name: Create Loki s3 secret
   kubernetes.core.k8s:
     template: Secret.yaml.j2
     apply: true
@@ -74,6 +107,8 @@
           schemas:
             - version: v12
               effectiveDate: "2022-06-01"
+          tls:
+            caName: loki-s3-cert
           secret:
             name: logging-loki-s3
             type: s3
