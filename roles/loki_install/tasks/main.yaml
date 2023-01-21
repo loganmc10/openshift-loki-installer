@@ -80,6 +80,12 @@
         storageClassName: "{{ default_storage }}"
         tenants:
           mode: openshift-logging
+        limits:
+          global:
+            ingestion:
+              ingestionBurstSize: 40
+              ingestionRate: 20
+              maxGlobalStreamsPerTenant: 25000
     apply: true
     state: present
     wait: true
