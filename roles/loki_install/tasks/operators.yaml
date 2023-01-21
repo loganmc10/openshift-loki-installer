@@ -1,0 +1,17 @@
+- name: Install Logging operator # noqa role-name[path]
+  ansible.builtin.include_role:
+    name: "{{ playbook_dir }}/openshift-edge-installer/common/roles/install_operator"
+  vars:
+    operator_name: cluster-logging
+    operator_namespace: openshift-logging
+    all_namespaces: false
+    cluster_monitoring: true
+
+- name: Install Loki operator # noqa role-name[path]
+  ansible.builtin.include_role:
+    name: "{{ playbook_dir }}/openshift-edge-installer/common/roles/install_operator"
+  vars:
+    operator_name: loki-operator
+    operator_namespace: openshift-operators-redhat
+    all_namespaces: true
+    cluster_monitoring: true
