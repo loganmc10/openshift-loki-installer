@@ -1,23 +1,6 @@
 - name: Setup operators
   ansible.builtin.include_tasks: operators.yaml
 
-- name: Get NooBaa tls cert
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Secret
-    name: noobaa-s3-serving-cert
-    namespace: openshift-storage
-  register: noobaa_s3_cert
-  until: noobaa_s3_cert is not failed
-
-- name: Create Loki s3 cert
-  kubernetes.core.k8s:
-    template: ConfigMap.yaml.j2
-    apply: true
-    state: present
-  register: k8s_result
-  until: k8s_result is not failed
-
 - name: Create Loki ObjectBucketClaim
   kubernetes.core.k8s:
     definition:
@@ -93,7 +76,7 @@
             - version: v12
               effectiveDate: "2022-06-01"
           tls:
-            caName: loki-s3-cert
+            caName: openshift-service-ca.crt
           secret:
             name: logging-loki-s3
             type: s3
