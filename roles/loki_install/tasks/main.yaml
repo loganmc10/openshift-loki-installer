@@ -87,7 +87,7 @@
         name: logging-loki
         namespace: openshift-logging
       spec:
-        size: 1x.small
+        size: "{{ loki_size | default('1x.small') }}"
         storage:
           schemas:
             - version: v12
