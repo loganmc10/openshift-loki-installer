@@ -7,7 +7,9 @@
   until: openshift_console is not failed
 
 - name: Append logging to console plugins list
-  when: (openshift_console.resources[0].spec.plugins is defined) and ("logging-view-plugin" not in openshift_console.resources[0].spec.plugins)
+  when:
+    - openshift_console.resources[0].spec.plugins is defined
+    - ("logging-view-plugin" not in openshift_console.resources[0].spec.plugins)
   kubernetes.core.k8s_json_patch:
     api_version: operator.openshift.io/v1
     kind: Console
