@@ -124,5 +124,27 @@
   register: k8s_result
   until: k8s_result is not failed
 
+- name: Enable audit log collection
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: logging.openshift.io/v1
+      kind: ClusterLogForwarder
+      metadata:
+        name: instance
+        namespace: openshift-logging
+      spec:
+        pipelines:
+          - name: all-to-default
+            inputRefs:
+              - infrastructure
+              - application
+              - audit
+            outputRefs:
+              - default
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
 - name: Setup console plugin
   ansible.builtin.include_tasks: console.yaml
