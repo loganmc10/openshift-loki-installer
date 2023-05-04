@@ -151,4 +151,5 @@
   until: k8s_result is not failed
 
 - name: Setup console plugin
+  when: local_logging | bool
   ansible.builtin.include_tasks: console.yaml
