@@ -29,7 +29,7 @@
     name: loki-obc
     namespace: openshift-logging
   register: obc_cm
-  until: obc_cm is not failed
+  until: obc_cm.resources | length | int == 1
 
 - name: Get ObjectBucketClaim Secret
   kubernetes.core.k8s_info:
@@ -38,7 +38,7 @@
     name: loki-obc
     namespace: openshift-logging
   register: obc_secret
-  until: obc_secret is not failed
+  until: obc_secret.resources | length | int == 1
 
 - name: Create Loki s3 secret
   kubernetes.core.k8s:
