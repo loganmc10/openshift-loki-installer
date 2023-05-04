@@ -6,3 +6,9 @@ loki_size defaults to ```1x.small```. See https://docs.openshift.com/container-p
 export KUBECONFIG=~/path/to/kubeconfig
 ansible-playbook loki-playbook.yaml -e "loki_size=1x.extra-small"
 ```
+
+Optional arguments:
+```
+-e "auditing=true"
+-e "local_logging=false"
+```
