@@ -105,7 +105,6 @@
   until: k8s_result is not failed
 
 - name: Configure cluster logging
-  when: local_logging | bool
   kubernetes.core.k8s:
     definition:
       apiVersion: logging.openshift.io/v1
@@ -127,7 +126,6 @@
 
 - name: Enable audit log collection
   when:
-    - local_logging | bool
     - auditing | bool
   kubernetes.core.k8s:
     definition:
@@ -151,5 +149,4 @@
   until: k8s_result is not failed
 
 - name: Setup console plugin
-  when: local_logging | bool
   ansible.builtin.include_tasks: console.yaml

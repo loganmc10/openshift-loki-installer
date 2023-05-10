@@ -10,5 +10,4 @@ ansible-playbook loki-playbook.yaml -e "loki_size=1x.extra-small"
 Optional arguments:
 ```
 -e "auditing=true"
--e "local_logging=false"
 ```
