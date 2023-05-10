@@ -30,7 +30,7 @@ spec:
       type: loki
       url: https://logging-loki-openshift-logging.apps.cluster.example.com/api/logs/v1/application
       secret:
-        name: remote-logger-secret
+        name: remote-logging-secret
 ...
   pipelines:
     - name: send-app-logs
