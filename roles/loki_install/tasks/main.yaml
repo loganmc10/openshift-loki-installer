@@ -30,6 +30,7 @@
     namespace: openshift-logging
   register: obc_cm
   until: obc_cm.resources | length | int == 1
+  retries: 20
 
 - name: Get ObjectBucketClaim Secret
   kubernetes.core.k8s_info:
@@ -85,7 +86,7 @@
           secret:
             name: logging-loki-s3
             type: s3
-        storageClassName: "{{ default_storage }}"
+        storageClassName: "{{ default_storage | default('ocs-storagecluster-cephfs') }}"
         tenants:
           mode: openshift-logging
         limits:
