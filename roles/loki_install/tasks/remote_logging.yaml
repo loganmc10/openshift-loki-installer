@@ -1,0 +1,98 @@
+- name: Create Remote Logging ServiceAccount
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: remote-logging
+        namespace: openshift-logging
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Create Remote Logging ClusterRole
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: lokistack-remote-tenant-logs-role
+      rules:
+        - apiGroups:
+            - "loki.grafana.com"
+          resources:
+            - application
+            - infrastructure
+            - audit
+          resourceNames:
+            - logs
+          verbs:
+            - "get"
+            - "create"
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Create Remote Logging ClusterRoleBinding
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: lokistack-remote-tenant-logs-binding
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: lokistack-remote-tenant-logs-role
+      subjects:
+        - kind: ServiceAccount
+          name: remote-logging
+          namespace: openshift-logging
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Create Remote Logging Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: remote-logging-token
+        namespace: openshift-logging
+        annotations:
+          kubernetes.io/service-account.name: remote-logging
+      type: kubernetes.io/service-account-token
+    apply: true
+    state: present
+  register: k8s_result
+  until: k8s_result is not failed
+
+- name: Wait for Remote Logging token to be deployed
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: remote-logging-token
+    namespace: openshift-logging
+  register: logging_secret
+  until: logging_secret.resources[0].data.token is defined
+  retries: 60
+  delay: 10
+
+- name: Get the Ingress Cert
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: default-ingress-cert
+    namespace: openshift-config-managed
+  register: ingress_cert
+  until: ingress_cert is not failed
+
+- name: Write logging secret for remote cluster
+  ansible.builtin.template:
+    src: RemoteLogging.yaml.j2
+    dest: "{{ (playbook_dir, 'remote-logging-secret.yaml') | path_join }}"
+    mode: "0644"

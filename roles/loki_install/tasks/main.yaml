@@ -125,8 +125,7 @@
   until: k8s_result is not failed
 
 - name: Enable audit log collection
-  when:
-    - auditing | bool
+  when: auditing | bool
   kubernetes.core.k8s:
     definition:
       apiVersion: logging.openshift.io/v1
@@ -150,3 +149,7 @@
 
 - name: Setup console plugin
   ansible.builtin.include_tasks: console.yaml
+
+- name: Setup remote logging
+  when: remote_logging | bool
+  ansible.builtin.include_tasks: remote_logging.yaml
