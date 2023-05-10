@@ -15,7 +15,7 @@ Optional arguments:
 
 ## Remote Logging
 
-When `remote_logging` is enabled, the playbook writes a file with a Secret named remote-logging-secret.yaml to the playbook directory.
+When `remote_logging` is enabled, the playbook writes a file with a Secret named `<loki_route>-secret.yaml` to the playbook directory.
 
 This Secret can be applied to the remote cluster, and then used for log forwarding, for example:
 ```

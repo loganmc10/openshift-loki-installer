@@ -91,8 +91,17 @@
   register: ingress_cert
   until: ingress_cert is not failed
 
+- name: Get the Loki Route
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    name: logging-loki
+    namespace: openshift-logging
+  register: loki_route
+  until: loki_route is not failed
+
 - name: Write logging secret for remote cluster
   ansible.builtin.template:
     src: RemoteLogging.yaml.j2
-    dest: "{{ (playbook_dir, 'remote-logging-secret.yaml') | path_join }}"
+    dest: "{{ (playbook_dir, loki_route.resources[0].spec.host + '-secret.yaml') | path_join }}"
     mode: "0644"
