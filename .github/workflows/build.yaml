@@ -21,4 +21,4 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check code
         run: |
-          ansible-lint -s -x yaml[line-length],role-name,var-naming[no-role-prefix]
+          ansible-lint -s -x yaml[line-length],role-name,var-naming[no-role-prefix] --exclude .github
