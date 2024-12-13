@@ -79,7 +79,7 @@
         size: "{{ loki_size | default('1x.small') }}"
         storage:
           schemas:
-            - version: v12
+            - version: v13
               effectiveDate: "2022-06-01"
           tls:
             caName: openshift-service-ca.crt
