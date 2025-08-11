@@ -18,7 +18,7 @@ jobs:
           pip3 install --upgrade ansible-core kubernetes ansible-lint
           ansible-galaxy collection install -U kubernetes.core community.general ansible.utils
           git config --global --add safe.directory /__w/openshift-loki-installer/openshift-loki-installer
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check code
         run: |
           ansible-lint -s -x yaml[line-length],role-name,var-naming[no-role-prefix] --exclude .github
